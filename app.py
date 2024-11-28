@@ -7,7 +7,14 @@ from gtts import gTTS
 app = Flask(__name__)
 
 # Load the trained model
-model_path = r'D:\Detection\model\model_avg.h5'
+# model_path = r'D:\Detection\model\model_avg.h5'
+# model = tf.keras.models.load_model(model_path)
+base_dir = os.path.dirname(__file__)
+
+# Construct the relative path to the model
+model_path = os.path.join(base_dir, 'model', 'model_avg.h5')
+
+# Load the model
 model = tf.keras.models.load_model(model_path)
 
 # Labels and plant information
