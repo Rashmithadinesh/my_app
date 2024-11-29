@@ -148,6 +148,7 @@ def generate_tts_kannada(text, filename):
     file_path = os.path.join(app.config['TTS_FOLDER'], filename)
     tts.save(file_path)
     return file_path
+CONFIDENCE_THRESHOLD = 60    
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -167,6 +168,19 @@ def index():
             predicted_index = np.argmax(predictions)
             predicted_label = labels.get(predicted_index, "Unknown")
             confidence = 100 * np.max(predictions)
+
+            # Check if confidence meets the threshold
+            if confidence < CONFIDENCE_THRESHOLD:
+                return render_template(
+                    'result.html',
+                    label="Unknown Plant",
+                    confidence=confidence,
+                    description="Unable to identify the plant with high confidence.",
+                    information="Please try again with a clearer image or different plant.",
+                    audio_path=None,
+                    audio1_path=None,
+                    image_path=url_for('static', filename=f'uploads/{file.filename}')
+                )
 
             # Get plant information and TTS
             plant_information = plant_desc.get(predicted_label, "This information is not available.")
@@ -191,7 +205,4 @@ def index():
     return render_template('index.html')
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000)
-
-
-
+    app.run(debug=True)
